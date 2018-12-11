@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
 
 namespace APIMetrics22
@@ -26,11 +28,18 @@ namespace APIMetrics22
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddEntityFrameworkNpgsql()
+                .AddDbContext<APIMetricsContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DBMetricas")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            loggerFactory.AddConsole();
+
+            var logger = loggerFactory.CreateLogger<ConsoleLogger>();
+
+            logger.LogInformation("String de conexao: " + Configuration.GetConnectionString("DBMetricas"));
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
