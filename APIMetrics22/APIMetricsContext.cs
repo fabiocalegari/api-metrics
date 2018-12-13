@@ -16,5 +16,6 @@ namespace APIMetrics22
         }
 
         public DbSet<Issue> Issue { get; set; }
+        public DbSet<Transition> Transition { get; set; }
     }
 }

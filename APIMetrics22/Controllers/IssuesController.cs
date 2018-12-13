@@ -42,6 +42,10 @@ namespace APIMetrics22.Controllers
 
             var issue = await _context.Issue
                 .FirstOrDefaultAsync(m => m.Id == id);
+
+            //EAGER Load to compose Json
+            _context.Entry(issue).Collection(iss => iss.Transitions).Load();
+
             if (issue == null)
             {
                 return NotFound();
@@ -49,5 +53,21 @@ namespace APIMetrics22.Controllers
 
             return Ok(issue);
         }
+
+        //GET: Issues/Projects/EA Assinaturas
+        [HttpGet("projects/{project}")]
+        public async Task<IActionResult> Projects(string project)
+        {
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            //Return issues of a project with transitions EAGER
+            var issues = await _context.Issue.Where(iss => iss.Project == project).Include(i => i.Transitions).ToListAsync();
+
+            return Ok(issues);
+        }
+
     }
 }

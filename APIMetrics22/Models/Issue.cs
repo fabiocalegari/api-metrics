@@ -21,5 +21,7 @@ namespace APIMetrics22.Models
         public string IssueType { get; set; }
         [Column("projeto")]
         public string Project { get; set; }
+        [ForeignKey("IssueId")]
+        public ICollection<Transition> Transitions { get; set; }
     }
 }
