@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using APIMetrics22;
 using APIMetrics22.Models;
 using Microsoft.Extensions.Logging;
+using System.Globalization;
 
 namespace APIMetrics22.Controllers
 {
@@ -17,11 +18,13 @@ namespace APIMetrics22.Controllers
     {
         private readonly APIMetricsContext _context;
         private readonly ILogger _logger;
+        private CultureInfo _culture;
 
         public IssuesController(APIMetricsContext context, ILogger<IssuesController> logger)
         {
             _context = context;
             _logger = logger;
+            _culture = new CultureInfo("pt-BR");
         }
 
         // GET: Issues
@@ -65,6 +68,27 @@ namespace APIMetrics22.Controllers
 
             //Return issues of a project with transitions EAGER
             var issues = await _context.Issue.Where(iss => iss.Project == project).Include(i => i.Transitions).ToListAsync();
+
+            return Ok(issues);
+        }
+
+        //GET: Issues/Projects/EA Assinaturas
+        [HttpGet("projects/{project}/{initDate}/{endDate}")]
+        public async Task<IActionResult> Projects(string project, string initDate, string endDate)
+        {
+            if (project == null || initDate == null || endDate == null)
+            {
+                return NotFound();
+            }
+
+            var dtInitDate = Convert.ToDateTime(initDate, _culture);
+            var dtEndDate = Convert.ToDateTime(endDate, _culture);
+
+            //Return issues of a project with transitions EAGER
+            var issues = await _context.Issue.Where(iss => iss.Project == project)
+                    .Include(i => i.Transitions)
+                    .Where(i => i.Transitions.Any(t => t.DataEvento >= dtInitDate && t.DataEvento <= dtEndDate && t.TransicaoDestino == "Done"))
+                    .ToListAsync();
 
             return Ok(issues);
         }
