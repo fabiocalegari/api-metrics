@@ -34,17 +34,17 @@ namespace APIMetrics22.Controllers
             return Ok(await _context.Issue.ToListAsync());
         }
 
-        // GET: Issues/Details/5
-        [HttpGet("{id}")]
-        public async Task<IActionResult> Details(int? id)
+        // GET: Issues/Details/EAC-2222
+        [HttpGet("{key}")]
+        public async Task<IActionResult> Details(string key)
         {
-            if (id == null)
+            if (key == null)
             {
                 return NotFound();
             }
 
             var issue = await _context.Issue
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Key == key);
 
             //EAGER Load to compose Json
             _context.Entry(issue).Collection(iss => iss.Transitions).Load();
@@ -72,7 +72,7 @@ namespace APIMetrics22.Controllers
             return Ok(issues);
         }
 
-        //GET: Issues/Projects/EA Assinaturas
+        //GET: Issues/Projects/EA Assinaturas/2018-01-01/2018-12-31
         [HttpGet("projects/{project}/{initDate}/{endDate}")]
         public async Task<IActionResult> Projects(string project, string initDate, string endDate)
         {
