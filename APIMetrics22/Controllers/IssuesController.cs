@@ -26,14 +26,23 @@ namespace APIMetrics22.Controllers
             _logger = logger;
             _culture = new CultureInfo("pt-BR");
         }
-
+        /// <summary>
+        /// Lista todas as atividades com suas transições
+        /// </summary>
+        /// <returns></returns>
+        /// <response code="200">Retorna todas as atividaeds da base. Pode ser lento!</response>
         // GET: Issues
         [HttpGet]
         public async Task<IActionResult> Index()
         {
             return Ok(await _context.Issue.ToListAsync());
         }
-
+        /// <summary>
+        /// Lista uma atividade específica com suas transições. A busca é feita através da chave. Ex.: EAC-2222
+        /// </summary>
+        /// <param name="key">É a chave da atividade. (Ex.: EAC-2222)</param>
+        /// <returns></returns>
+        /// <response code="200">Retorna a atividaed selecionada</response>
         // GET: Issues/Details/EAC-2222
         [HttpGet("{key}")]
         public async Task<IActionResult> Details(string key)
@@ -56,7 +65,12 @@ namespace APIMetrics22.Controllers
 
             return Ok(issue);
         }
-
+        /// <summary>
+        /// Lista todas as atividades de um projeto específico, onde o nome do projeto é o parâmetro. Ex.: EA Cobrança
+        /// </summary>
+        /// <param name="project">Os Projetos principais são: EA Assinaturas, EA Atendimento, EA Cobrança e EA Normandia.</param>
+        /// <returns></returns>
+        /// <response code="200">Retorna todas as atividades do projeto selecionado</response>
         //GET: Issues/Projects/EA Assinaturas
         [HttpGet("projects/{project}")]
         public async Task<IActionResult> Projects(string project)
@@ -71,7 +85,13 @@ namespace APIMetrics22.Controllers
 
             return Ok(issues);
         }
-
+        /// <summary>
+        /// Lista todas as atividades de um projeto específico em um determinado período. (Formato de data: AAAA-MM-DD)
+        /// </summary>
+        /// <param name="project">Os Projetos principais são: EA Assinaturas, EA Atendimento, EA Cobrança e EA Normandia.</param>
+        /// <param name="initDate">Data de início para o filtro de acordo com a data de conclusão da atividade.</param>
+        /// <param name="endDate">Data fim para o filtro de acordo com a data de conclusão da atividade.</param>
+        /// <response code="200">Retorna todas as atividades do projeto no período selecionado com suas transições</response>
         //GET: Issues/Projects/EA Assinaturas/2018-01-01/2018-12-31
         [HttpGet("projects/{project}/{initDate}/{endDate}")]
         public async Task<IActionResult> Projects(string project, string initDate, string endDate)
