@@ -52,11 +52,9 @@ namespace APIMetrics22.Controllers
                 return NotFound();
             }
 
-            var issue = await _context.Issue
+            //EAGER Load of Transitions to compose Json
+            var issue = await _context.Issue.Include(iss => iss.Transitions)
                 .FirstOrDefaultAsync(m => m.Key == key);
-
-            //EAGER Load to compose Json
-            _context.Entry(issue).Collection(iss => iss.Transitions).Load();
 
             if (issue == null)
             {
